@@ -1,0 +1,87 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\JobBrowseController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\HRDashboardController;
+use App\Http\Controllers\JobPostController;
+use App\Http\Controllers\ApplicantController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminJobController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\ReportController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
+// Public Routes
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+Route::get('/jobs', [JobBrowseController::class, 'index'])->name('jobs.index');
+Route::get('/jobs/{id}', [JobBrowseController::class, 'show'])->name('jobs.show');
+
+// Job Seeker Routes (role: user)
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/user/applications', [ApplicationController::class, 'index'])->name('user.applications.index');
+    Route::post('/user/applications', [ApplicationController::class, 'store'])->name('user.applications.store');
+    Route::get('/user/applications/{id}', [ApplicationController::class, 'show'])->name('user.applications.show');
+});
+
+// HR Routes (role: hr)
+Route::prefix('hr')->middleware(['auth', 'role:hr'])->name('hr.')->group(function () {
+    Route::get('/dashboard', [HRDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('jobs', JobPostController::class);
+    Route::get('/jobs/{jobId}/applicants', [ApplicantController::class, 'index'])->name('jobs.applicants');
+    Route::patch('/applications/{applicationId}/status', [ApplicantController::class, 'updateStatus'])->name('applications.status');
+});
+
+// Admin Routes (role: admin)
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/jobs', [AdminJobController::class, 'index'])->name('jobs.index');
+    Route::get('/jobs/{id}/edit', [AdminJobController::class, 'edit'])->name('jobs.edit');
+    Route::put('/jobs/{id}', [AdminJobController::class, 'update'])->name('jobs.update');
+    Route::delete('/jobs/{id}', [AdminJobController::class, 'destroy'])->name('jobs.destroy');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
+    Route::patch('/reports/{id}', [ReportController::class, 'update'])->name('reports.update');
+});
+
+// Profile Routes (all authenticated users)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // CV Upload Routes
+    Route::post('/profile/cv', [ProfileController::class, 'uploadCV'])->name('profile.cv.upload');
+    Route::delete('/profile/cv', [ProfileController::class, 'deleteCV'])->name('profile.cv.delete');
+});
+
+// CV View Route (accessible by user and admin)
+Route::middleware('auth')->get('/cv/{user}', function ($userId) {
+    $currentUser = \Illuminate\Support\Facades\Auth::user();
+    $user = \App\Models\User::findOrFail($userId);
+    
+    // Only allow user to view their own CV or admin/HR to view any CV
+    $canView = ($currentUser->id === $user->id) || 
+               ($currentUser->role === 'admin') || 
+               ($currentUser->role === 'hr');
+    
+    if (!$canView) {
+        abort(403, 'Unauthorized to view this CV.');
+    }
+    
+    if (!$user->cv_path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($user->cv_path)) {
+        abort(404, 'CV not found.');
+    }
+    
+    return response()->file(storage_path('app/public/' . $user->cv_path));
+})->name('cv.view');
+
+require __DIR__.'/auth.php';
+
