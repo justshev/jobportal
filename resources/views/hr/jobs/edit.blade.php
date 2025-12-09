@@ -3,7 +3,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <h1 class="text-3xl font-bold text-slate-900 mb-8">Edit Job</h1>
-    <form action="{{ route('hr.jobs.update', $job->id) }}" method="POST" class="bg-white rounded-xl border border-slate-200 p-8 space-y-6">
+    <form action="{{ route('hr.jobs.update', $job->id) }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-xl border border-slate-200 p-8 space-y-6">
         @csrf
         @method('PUT')
         <div>
@@ -14,11 +14,66 @@
             <label class="block text-sm font-medium text-slate-700 mb-1">Company Name *</label>
             <input type="text" name="company_name" value="{{ old('company_name', $job->company_name) }}" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Location Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Location *</label>
-                <input type="text" name="location" value="{{ old('location', $job->location) }}" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Provinsi *</label>
+                <select name="province" id="province" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Pilih Provinsi</option>
+                    @foreach($provinces as $province)
+                        <option value="{{ $province }}" {{ old('province', $job->province) == $province ? 'selected' : '' }}>{{ $province }}</option>
+                    @endforeach
+                </select>
             </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Kota/Kabupaten *</label>
+                <select name="city" id="city" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Pilih Kota</option>
+                    @foreach($cities as $city)
+                        <option value="{{ $city }}" {{ old('city', $job->city) == $city ? 'selected' : '' }}>{{ $city }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Kecamatan</label>
+                <input type="text" name="district" value="{{ old('district', $job->district) }}" placeholder="Contoh: Kebayoran Baru" class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+            </div>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Lengkap *</label>
+            <textarea name="full_address" rows="2" required placeholder="Contoh: Jl. Gatot Subroto No. 123" class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">{{ old('full_address', $job->full_address) }}</textarea>
+        </div>
+        
+        <!-- Geolocation -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <div class="flex-1">
+                    <h4 class="text-sm font-semibold text-indigo-900 mb-1">Koordinat Lokasi</h4>
+                    <p class="text-xs text-indigo-700 mb-3">
+                        @if($job->latitude && $job->longitude)
+                            Current: {{ $job->latitude }}, {{ $job->longitude }} | 
+                        @endif
+                        Klik tombol untuk update koordinat
+                    </p>
+                    <button type="button" onclick="getLocation()" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        </svg>
+                        Update Lokasi
+                    </button>
+                    <span id="locationStatus" class="ml-3 text-xs text-slate-600"></span>
+                </div>
+            </div>
+            <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $job->latitude) }}">
+            <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $job->longitude) }}">
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Employment Type *</label>
                 <select name="employment_type" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
@@ -34,6 +89,34 @@
             <label class="block text-sm font-medium text-slate-700 mb-1">Salary Range</label>
             <input type="text" name="salary_range" value="{{ old('salary_range', $job->salary_range) }}" class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
         </div>
+        
+        <!-- Job Poster Image Upload -->
+        <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Job Poster Image</label>
+            @if($job->image)
+            <div class="mb-4">
+                <p class="text-sm text-slate-600 mb-2">Current Image:</p>
+                <img src="{{ asset('storage/' . $job->image) }}" alt="Current job poster" class="w-48 h-48 object-cover rounded-lg border border-slate-300">
+            </div>
+            @endif
+            <div class="flex items-start gap-4">
+                <div class="flex-1">
+                    <input type="file" name="image" id="image" accept="image/jpeg,image/jpg,image/png,image/webp" class="block w-full text-sm text-slate-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-lg file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-indigo-50 file:text-indigo-700
+                        hover:file:bg-indigo-100
+                        cursor-pointer border border-slate-300 rounded-lg">
+                    <p class="mt-2 text-xs text-slate-500">{{ $job->image ? 'Upload new image to replace current' : 'Upload job poster image' }} (JPG, PNG, WEBP - Max 5MB)</p>
+                    @error('image')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+                <div id="imagePreview" class="hidden w-32 h-32 border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
+                    <img id="previewImg" src="" alt="Preview" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+        
         <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Description *</label>
             <textarea name="description" rows="6" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">{{ old('description', $job->description) }}</textarea>
@@ -55,4 +138,81 @@
         </div>
     </form>
 </div>
+
+<script>
+    // Province change handler
+    document.getElementById('province').addEventListener('change', async function() {
+        const province = this.value;
+        const citySelect = document.getElementById('city');
+        
+        citySelect.innerHTML = '<option value="">Loading...</option>';
+        citySelect.disabled = true;
+        
+        if (province) {
+            try {
+                const response = await fetch(`/api/cities/${encodeURIComponent(province)}`);
+                const cities = await response.json();
+                
+                citySelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+                citySelect.disabled = false;
+            } catch (error) {
+                citySelect.innerHTML = '<option value="">Error loading cities</option>';
+                citySelect.disabled = false;
+            }
+        } else {
+            citySelect.innerHTML = '<option value="">Pilih Provinsi Dulu</option>';
+            citySelect.disabled = false;
+        }
+    });
+
+    // Image preview functionality
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Geolocation function
+    function getLocation() {
+        const status = document.getElementById('locationStatus');
+        
+        if (!navigator.geolocation) {
+            status.textContent = 'Geolocation tidak didukung browser Anda';
+            status.className = 'ml-3 text-xs text-red-600';
+            return;
+        }
+        
+        status.textContent = 'Mendeteksi lokasi...';
+        status.className = 'ml-3 text-xs text-indigo-600';
+        
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById('latitude').value = position.coords.latitude.toFixed(8);
+                document.getElementById('longitude').value = position.coords.longitude.toFixed(8);
+                status.textContent = '✓ Koordinat berhasil dideteksi!';
+                status.className = 'ml-3 text-xs text-green-600 font-semibold';
+            },
+            function(error) {
+                let errorMsg = 'Gagal mendeteksi lokasi';
+                if (error.code === error.PERMISSION_DENIED) {
+                    errorMsg = 'Izin akses lokasi ditolak';
+                }
+                status.textContent = errorMsg;
+                status.className = 'ml-3 text-xs text-red-600';
+            }
+        );
+    }
+</script>
 @endsection

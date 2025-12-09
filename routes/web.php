@@ -11,6 +11,8 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\UserLocationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,12 +24,16 @@ Route::get('/', function () {
 Route::get('/jobs', [JobBrowseController::class, 'index'])->name('jobs.index');
 Route::get('/jobs/{id}', [JobBrowseController::class, 'show'])->name('jobs.show');
 
+// API Route for location
+Route::get('/api/cities/{province}', [LocationController::class, 'getCities'])->name('api.cities');
+
 // Job Seeker Routes (role: user)
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
     Route::get('/user/applications', [ApplicationController::class, 'index'])->name('user.applications.index');
     Route::post('/user/applications', [ApplicationController::class, 'store'])->name('user.applications.store');
     Route::get('/user/applications/{id}', [ApplicationController::class, 'show'])->name('user.applications.show');
+    Route::post('/user/location/save', [UserLocationController::class, 'saveLocation'])->name('user.location.save');
 });
 
 // HR Routes (role: hr)

@@ -41,6 +41,13 @@
         @forelse($jobs as $job)
             <div class="bg-white rounded-lg sm:rounded-xl border border-slate-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                    <!-- Job Image -->
+                    @if($job->image)
+                    <div class="flex-shrink-0">
+                        <img src="{{ asset('storage/' . $job->image) }}" alt="{{ $job->title }}" class="w-full sm:w-32 sm:h-32 object-cover rounded-lg border border-slate-200">
+                    </div>
+                    @endif
+                    
                     <div class="flex-1">
                         <h3 class="text-lg sm:text-xl font-semibold text-slate-900 mb-2">{{ $job->title }}</h3>
                         <p class="text-base sm:text-lg text-slate-700 mb-2 sm:mb-3">{{ $job->company_name }}</p>
@@ -51,7 +58,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
-                                {{ $job->location }}
+                                {{ $job->city }}, {{ $job->province }}
                             </div>
                             <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 {{ ucfirst(str_replace('-', ' ', $job->employment_type)) }}

@@ -13,6 +13,7 @@
         <table class="w-full">
             <thead class="bg-slate-50">
                 <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Image</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Title</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Applicants</th>
@@ -23,6 +24,17 @@
             <tbody class="divide-y divide-slate-200">
                 @forelse($jobs as $job)
                     <tr>
+                        <td class="px-6 py-4">
+                            @if($job->image)
+                                <img src="{{ asset('storage/' . $job->image) }}" alt="{{ $job->title }}" class="w-16 h-16 object-cover rounded-lg border border-slate-200">
+                            @else
+                                <div class="w-16 h-16 bg-slate-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 font-medium text-slate-900">{{ $job->title }}</td>
                         <td class="px-6 py-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $job->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
@@ -45,7 +57,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-slate-500">No job postings yet.</td>
+                        <td colspan="6" class="px-6 py-12 text-center text-slate-500">No job postings yet.</td>
                     </tr>
                 @endforelse
             </tbody>

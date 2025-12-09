@@ -23,6 +23,11 @@ class User extends Authenticatable
         'password',
         'role',
         'cv_path',
+        'province',
+        'city',
+        'district',
+        'latitude',
+        'longitude',
     ];
 
     /**

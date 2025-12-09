@@ -18,6 +18,13 @@
     @endif
 
     <div class="bg-white rounded-lg sm:rounded-xl border border-slate-200 p-4 sm:p-6 lg:p-8 shadow-sm">
+        <!-- Job Image -->
+        @if($job->image)
+        <div class="mb-6">
+            <img src="{{ asset('storage/' . $job->image) }}" alt="{{ $job->title }}" class="w-full max-h-96 object-cover rounded-lg border border-slate-200">
+        </div>
+        @endif
+        
         <div class="mb-4 sm:mb-6">
             <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">{{ $job->title }}</h1>
             <p class="text-lg sm:text-xl text-slate-700 mb-3 sm:mb-4">{{ $job->company_name }}</p>
@@ -27,7 +34,17 @@
                     <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
-                    {{ $job->location }}
+                    @if($job->city && $job->province)
+                        {{ $job->city }}, {{ $job->province }}
+                        @if($job->district)
+                            <span class="text-slate-400 mx-1">•</span>
+                            {{ $job->district }}
+                        @endif
+                    @elseif($job->full_address)
+                        {{ Str::limit($job->full_address, 50) }}
+                    @else
+                        Lokasi tidak tersedia
+                    @endif
                 </div>
                 <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     {{ ucfirst(str_replace('-', ' ', $job->employment_type)) }}

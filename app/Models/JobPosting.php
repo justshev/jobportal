@@ -12,13 +12,19 @@ class JobPosting extends Model
     protected $fillable = [
         'title',
         'company_name',
-        'location',
+        'province',
+        'city',
+        'district',
+        'full_address',
+        'latitude',
+        'longitude',
         'employment_type',
         'salary_range',
         'description',
         'requirements',
         'posted_by',
         'status',
+        'image',
     ];
 
     public function postedBy()
