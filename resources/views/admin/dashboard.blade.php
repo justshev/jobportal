@@ -37,7 +37,7 @@
                 @foreach($latestReports as $report)
                     <tr>
                         <td class="px-6 py-4 text-slate-900">{{ $report->user->name }}</td>
-                        <td class="px-6 py-4 text-slate-700">{{ $report->job->title }}</td>
+                        <td class="px-6 py-4 text-slate-700">{{ $report->jobPosting->title }}</td>
                         <td class="px-6 py-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                 {{ ucfirst($report->status) }}

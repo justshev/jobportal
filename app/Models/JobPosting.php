@@ -32,6 +32,12 @@ class JobPosting extends Model
         return $this->belongsTo(User::class, 'posted_by');
     }
 
+    // Alias for consistency
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'posted_by');
+    }
+
     public function applications()
     {
         return $this->hasMany(Application::class, 'job_id');

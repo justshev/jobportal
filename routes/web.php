@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\UserLocationController;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,10 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/user/applications', [ApplicationController::class, 'store'])->name('user.applications.store');
     Route::get('/user/applications/{id}', [ApplicationController::class, 'show'])->name('user.applications.show');
     Route::post('/user/location/save', [UserLocationController::class, 'saveLocation'])->name('user.location.save');
+    
+    // Report Routes for Users
+    Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+    Route::get('/my-reports', [ReportController::class, 'myReports'])->name('reports.my-reports');
 });
 
 // HR Routes (role: hr)
@@ -52,9 +57,12 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::put('/jobs/{id}', [AdminJobController::class, 'update'])->name('jobs.update');
     Route::delete('/jobs/{id}', [AdminJobController::class, 'destroy'])->name('jobs.destroy');
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
-    Route::patch('/reports/{id}', [ReportController::class, 'update'])->name('reports.update');
+    
+    // Report Management for Admin
+    Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{id}', [AdminReportController::class, 'show'])->name('reports.show');
+    Route::patch('/reports/{id}', [AdminReportController::class, 'update'])->name('reports.update');
+    Route::delete('/reports/{id}', [AdminReportController::class, 'destroy'])->name('reports.destroy');
 });
 
 // Profile Routes (all authenticated users)

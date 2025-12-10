@@ -18,6 +18,21 @@
     @endif
 
     <div class="bg-white rounded-lg sm:rounded-xl border border-slate-200 p-4 sm:p-6 lg:p-8 shadow-sm">
+        <!-- Header with Report Button -->
+        <div class="flex justify-between items-start mb-4">
+            <div class="flex-1"></div>
+            @auth
+                @if(auth()->user()->role === 'user')
+                    <button onclick="document.getElementById('reportModal').classList.remove('hidden')" class="text-red-600 hover:text-red-700 text-sm font-medium flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+                        </svg>
+                        Report Job
+                    </button>
+                @endif
+            @endauth
+        </div>
+
         <!-- Job Image -->
         @if($job->image)
         <div class="mb-6">
@@ -130,5 +145,55 @@
             </div>
         @endauth
     </div>
+
+    <!-- Report Modal -->
+    @auth
+        @if(auth()->user()->role === 'user')
+            <div id="reportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="if(event.target === this) this.classList.add('hidden')">
+                <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6" onclick="event.stopPropagation()">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-slate-900">Report Job Posting</h3>
+                        <button onclick="document.getElementById('reportModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('reports.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="job_posting_id" value="{{ $job->id }}">
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Reason for Report</label>
+                            <select name="reason" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                <option value="">Select a reason...</option>
+                                <option value="spam">Spam</option>
+                                <option value="inappropriate">Inappropriate Content</option>
+                                <option value="fake">Fake Job Posting</option>
+                                <option value="misleading">Misleading Information</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+                            <textarea name="description" rows="4" required maxlength="1000" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" placeholder="Please provide details about why you're reporting this job..."></textarea>
+                            <p class="text-xs text-slate-500 mt-1">Maximum 1000 characters</p>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button type="button" onclick="document.getElementById('reportModal').classList.add('hidden')" class="flex-1 px-4 py-2 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
+                                Submit Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
+    @endauth
 </div>
 @endsection

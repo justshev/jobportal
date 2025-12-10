@@ -10,19 +10,70 @@ class Report extends Model
     use HasFactory;
 
     protected $fillable = [
-        'job_id',
         'user_id',
+        'job_posting_id',
         'reason',
+        'description',
         'status',
+        'admin_note',
+        'reviewed_by',
+        'reviewed_at',
     ];
 
-    public function job()
-    {
-        return $this->belongsTo(JobPosting::class, 'job_id');
-    }
+    protected $casts = [
+        'reviewed_at' => 'datetime',
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
+    public function jobPosting()
+    {
+        return $this->belongsTo(JobPosting::class);
+    }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function getReasonLabelAttribute()
+    {
+        $reasons = [
+            'spam' => 'Spam',
+            'inappropriate' => 'Inappropriate Content',
+            'fake' => 'Fake Job Posting',
+            'misleading' => 'Misleading Information',
+            'other' => 'Other',
+        ];
+
+        return $reasons[$this->reason] ?? $this->reason;
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        $statuses = [
+            'pending' => 'Pending Review',
+            'reviewing' => 'Under Review',
+            'resolved' => 'Resolved',
+            'rejected' => 'Rejected',
+        ];
+
+        return $statuses[$this->status] ?? $this->status;
+    }
+
+    public function getStatusColorAttribute()
+    {
+        $colors = [
+            'pending' => 'yellow',
+            'reviewing' => 'blue',
+            'resolved' => 'green',
+            'rejected' => 'red',
+        ];
+
+        return $colors[$this->status] ?? 'gray';
+    }
 }
+

@@ -18,7 +18,7 @@ class AdminDashboardController extends Controller
             'total_reports' => Report::count(),
         ];
 
-        $latestReports = Report::with(['job', 'user'])->latest()->take(10)->get();
+        $latestReports = Report::with(['jobPosting', 'user'])->latest()->take(10)->get();
 
         return view('admin.dashboard', compact('stats', 'latestReports'));
     }

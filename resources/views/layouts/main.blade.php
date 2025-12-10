@@ -92,6 +92,14 @@
                                     </svg>
                                     Profile Settings
                                 </a>
+                                @if(auth()->user()->role === 'user')
+                                    <a href="{{ route('reports.my-reports') }}" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                                        <svg class="w-4 h-4 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+                                        </svg>
+                                        My Reports
+                                    </a>
+                                @endif
                                 <div class="border-t border-slate-100 my-1"></div>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
