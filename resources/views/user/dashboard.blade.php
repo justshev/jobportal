@@ -160,7 +160,7 @@
 </div>
 
 <script>
-    async function enableLocation() {
+    function enableLocation() {
         const btn = document.getElementById('locationBtn');
         const btnText = document.getElementById('btnText');
         const status = document.getElementById('locationStatus');
@@ -176,6 +176,19 @@
         btnText.textContent = 'Mendeteksi lokasi...';
         status.textContent = '🔍 Sedang mengakses lokasi Anda...';
         status.className = 'mt-3 text-sm font-semibold text-white';
+        
+        // Check if using secure context
+        const isSecure = window.location.protocol === 'https:' || 
+                        window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1';
+        
+        if (!isSecure) {
+            status.textContent = '⚠️ Gunakan https:// atau localhost untuk akses lokasi. URL saat ini: ' + window.location.href;
+            status.className = 'mt-3 text-sm font-semibold text-yellow-100';
+            btn.disabled = false;
+            btnText.textContent = 'Coba Lagi';
+            return;
+        }
         
         navigator.geolocation.getCurrentPosition(
             async function(position) {
@@ -219,24 +232,33 @@
             },
             function(error) {
                 let errorMsg = 'Gagal mendeteksi lokasi';
+                let helpText = '';
+                
+                console.log('Geolocation error:', error); // Debug log
                 
                 if (error.code === error.PERMISSION_DENIED) {
-                    errorMsg = 'Izin akses lokasi ditolak. Silakan izinkan akses lokasi di browser Anda.';
+                    errorMsg = '🚫 Izin akses lokasi ditolak';
+                    helpText = ' Klik icon gembok di address bar, izinkan akses lokasi, lalu refresh halaman.';
                 } else if (error.code === error.POSITION_UNAVAILABLE) {
-                    errorMsg = 'Informasi lokasi tidak tersedia.';
+                    errorMsg = '📍 Lokasi tidak dapat dideteksi';
+                    helpText = ' Cara fix: (1) System Settings → Privacy & Security → Location Services → ON, (2) Izinkan browser akses location, (3) Gunakan WiFi (lebih akurat), atau (4) Set lokasi manual di Profile.';
                 } else if (error.code === error.TIMEOUT) {
-                    errorMsg = 'Waktu permintaan lokasi habis.';
+                    errorMsg = '⏱️ Waktu permintaan habis';
+                    helpText = ' Sinyal GPS lemah. Coba: Tunggu beberapa saat, gunakan WiFi, atau set manual di Profile.';
+                } else {
+                    errorMsg = '❌ Error tidak diketahui';
+                    helpText = ' Error code: ' + error.code + '. Message: ' + error.message;
                 }
                 
-                status.textContent = '❌ ' + errorMsg;
+                status.innerHTML = errorMsg + helpText + '<br><a href="{{ route("profile.edit") }}" class="text-yellow-200 underline font-semibold mt-2 inline-block">→ Set Lokasi Manual di Profile</a>';
                 status.className = 'mt-3 text-sm font-semibold text-red-100';
                 btn.disabled = false;
                 btnText.textContent = 'Coba Lagi';
             },
             {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
+                enableHighAccuracy: false, // Ubah ke false untuk lebih cepat
+                timeout: 30000, // Naikkan timeout ke 30 detik
+                maximumAge: 60000 // Cache lokasi selama 1 menit
             }
         );
     }

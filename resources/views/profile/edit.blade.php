@@ -337,7 +337,8 @@
 </div>
 
 <!-- Delete Account Modal -->
-<div id="deleteModal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
+<div id="deleteModal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-50 z-50 p-4">
+    <div class="flex items-center justify-center min-h-screen">
     <div class="bg-white rounded-2xl max-w-md w-full p-6">
         <h3 class="text-xl font-bold text-slate-900 mb-2">Are you sure?</h3>
         <p class="text-sm text-slate-600 mb-4">Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm.</p>
@@ -361,6 +362,7 @@
                 </button>
             </div>
         </form>
+    </div>
     </div>
 </div>
 @endsection

@@ -209,11 +209,26 @@
             },
             function(error) {
                 let errorMsg = 'Gagal mendeteksi lokasi';
+                let helpText = '';
+                
                 if (error.code === error.PERMISSION_DENIED) {
-                    errorMsg = 'Izin akses lokasi ditolak. Silakan izinkan akses lokasi di browser Anda.';
+                    errorMsg = 'Izin akses lokasi ditolak';
+                    helpText = ' Pastikan Anda mengizinkan akses lokasi di browser.';
+                } else if (error.code === error.POSITION_UNAVAILABLE) {
+                    errorMsg = 'Lokasi tidak tersedia';
+                    helpText = ' Pastikan GPS aktif dan terhubung internet. Gunakan HTTPS atau localhost.';
+                } else if (error.code === error.TIMEOUT) {
+                    errorMsg = 'Waktu permintaan habis';
+                    helpText = ' Coba lagi dengan koneksi yang lebih baik.';
                 }
-                status.textContent = errorMsg;
+                
+                status.textContent = errorMsg + helpText;
                 status.className = 'ml-3 text-xs text-red-600';
+            },
+            {
+                enableHighAccuracy: false,
+                timeout: 30000,
+                maximumAge: 60000
             }
         );
     }

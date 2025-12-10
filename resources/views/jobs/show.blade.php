@@ -149,7 +149,8 @@
     <!-- Report Modal -->
     @auth
         @if(auth()->user()->role === 'user')
-            <div id="reportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="if(event.target === this) this.classList.add('hidden')">
+            <div id="reportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 p-4" onclick="if(event.target === this) this.classList.add('hidden')">
+                <div class="flex items-center justify-center min-h-screen">
                 <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6" onclick="event.stopPropagation()">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-bold text-slate-900">Report Job Posting</h3>
@@ -191,6 +192,7 @@
                             </button>
                         </div>
                     </form>
+                </div>
                 </div>
             </div>
         @endif

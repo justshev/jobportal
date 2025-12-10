@@ -28,6 +28,11 @@ class User extends Authenticatable
         'district',
         'latitude',
         'longitude',
+        'company_document',
+        'verification_status',
+        'rejection_reason',
+        'verified_at',
+        'verified_by',
     ];
 
     /**
@@ -50,7 +55,31 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'verified_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Check if user is verified (HR users need admin approval)
+     * 
+     * @return bool
+     */
+    public function isVerified(): bool
+    {
+        if ($this->role !== 'hr') {
+            return true; // Non-HR users don't need verification
+        }
+        return $this->verification_status === 'approved';
+    }
+
+    /**
+     * Check if user needs verification
+     * 
+     * @return bool
+     */
+    public function needsVerification(): bool
+    {
+        return $this->role === 'hr' && $this->verification_status === 'pending';
     }
 
     // Relationships
@@ -67,5 +96,10 @@ class User extends Authenticatable
     public function reports()
     {
         return $this->hasMany(Report::class);
+    }
+
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }

@@ -113,7 +113,7 @@
                                     required 
                                     autofocus 
                                     autocomplete="username"
-                                    class="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors @error('email') border-red-300 @enderror"
+                                    class="block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors {{ $errors->has('email') ? 'border-red-300' : 'border-slate-300' }}"
                                     placeholder="you@example.com"
                                 >
                             </div>
@@ -142,7 +142,7 @@
                                     name="password" 
                                     required 
                                     autocomplete="current-password"
-                                    class="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors @error('password') border-red-300 @enderror"
+                                    class="block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors {{ $errors->has('password') ? 'border-red-300' : 'border-slate-300' }}"
                                     placeholder="Enter your password"
                                 >
                             </div>

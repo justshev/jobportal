@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminJobController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AdminReportController;
+use App\Http\Controllers\AdminVerificationController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\UserLocationController;
 use Illuminate\Support\Facades\Route;
@@ -63,6 +64,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/reports/{id}', [AdminReportController::class, 'show'])->name('reports.show');
     Route::patch('/reports/{id}', [AdminReportController::class, 'update'])->name('reports.update');
     Route::delete('/reports/{id}', [AdminReportController::class, 'destroy'])->name('reports.destroy');
+    
+    // HR Verification Routes
+    Route::get('/verification', [AdminVerificationController::class, 'index'])->name('verification.index');
+    Route::get('/verification/{id}', [AdminVerificationController::class, 'show'])->name('verification.show');
+    Route::post('/verification/{id}/approve', [AdminVerificationController::class, 'approve'])->name('verification.approve');
+    Route::post('/verification/{id}/reject', [AdminVerificationController::class, 'reject'])->name('verification.reject');
+    Route::get('/verification/{id}/document', [AdminVerificationController::class, 'downloadDocument'])->name('verification.download-document');
 });
 
 // Profile Routes (all authenticated users)

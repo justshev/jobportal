@@ -254,6 +254,51 @@
                             </div>
                         </div>
 
+                        <!-- Company Document Upload (HR Only) - REQUIRED -->
+                        <div x-show="role === 'hr'" x-transition class="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-6">
+                            <div class="flex items-start gap-3 mb-4">
+                                <svg class="w-6 h-6 text-purple-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-bold text-slate-900 mb-1 flex items-center">
+                                        Upload Company Document
+                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Required</span>
+                                    </h4>
+                                    <p class="text-xs text-slate-600 mb-2">Upload surat pernyataan kepemilikan usaha, SIUP, atau dokumen legalitas perusahaan.</p>
+                                    <p class="text-xs text-purple-700 font-medium">⚠️ Your account will need admin approval before you can login.</p>
+                                </div>
+                            </div>
+
+                            <div class="relative">
+                                <input 
+                                    type="file" 
+                                    name="company_document" 
+                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    class="hidden"
+                                    id="company-document-upload"
+                                    x-ref="companyDoc"
+                                    @change="fileName = $event.target.files[0]?.name || ''"
+                                    :required="role === 'hr'"
+                                >
+                                <label for="company-document-upload" class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-purple-300 rounded-lg cursor-pointer hover:border-purple-400 hover:bg-white transition-all">
+                                    <svg class="w-5 h-5 text-purple-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-slate-600" x-text="fileName || 'Choose PDF, JPG, or PNG (max 5MB)'"></span>
+                                </label>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">Accepted formats: PDF, JPG, PNG (max 5MB)</p>
+                            @error('company_document')
+                                <p class="mt-2 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
                         <!-- Submit Button -->
                         <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-lg">
                             Create Account
