@@ -24,10 +24,25 @@
                 <input type="text" name="employment_type" value="{{ old('employment_type', $job->employment_type) }}" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
             </div>
         </div>
-        <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Salary Range</label>
-            <input type="text" name="salary_range" value="{{ old('salary_range', $job->salary_range) }}" class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+        
+        <!-- Salary Range Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Gaji Minimum (Rp)</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">Rp</span>
+                    <input type="text" name="salary_min" id="salary_min" value="{{ old('salary_min', $job->salary_min ? number_format($job->salary_min, 0, ',', '.') : '') }}" placeholder="5.000.000" class="block w-full rounded-lg border border-slate-300 pl-12 pr-3 py-2 focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Gaji Maximum (Rp)</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">Rp</span>
+                    <input type="text" name="salary_max" id="salary_max" value="{{ old('salary_max', $job->salary_max ? number_format($job->salary_max, 0, ',', '.') : '') }}" placeholder="10.000.000" class="block w-full rounded-lg border border-slate-300 pl-12 pr-3 py-2 focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
         </div>
+        
         <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Description *</label>
             <textarea name="description" rows="6" required class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">{{ old('description', $job->description) }}</textarea>
@@ -50,4 +65,39 @@
         </div>
     </form>
 </div>
+
+<script>
+    // Format Rupiah
+    function formatRupiah(angka) {
+        const numberString = angka.replace(/[^,\d]/g, '').toString();
+        const split = numberString.split(',');
+        const sisa = split[0].length % 3;
+        let rupiah = split[0].substr(0, sisa);
+        const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+        
+        if (ribuan) {
+            const separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        
+        rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+        return rupiah;
+    }
+    
+    // Apply format to salary inputs
+    const salaryMin = document.getElementById('salary_min');
+    const salaryMax = document.getElementById('salary_max');
+    
+    if (salaryMin) {
+        salaryMin.addEventListener('keyup', function(e) {
+            salaryMin.value = formatRupiah(this.value);
+        });
+    }
+    
+    if (salaryMax) {
+        salaryMax.addEventListener('keyup', function(e) {
+            salaryMax.value = formatRupiah(this.value);
+        });
+    }
+</script>
 @endsection

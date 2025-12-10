@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JobPosting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class JobBrowseController extends Controller
 {
@@ -21,9 +22,9 @@ class JobBrowseController extends Controller
             });
         }
 
-        // Filter by location
-        if ($request->filled('location')) {
-            $query->where('location', 'like', "%{$request->location}%");
+        // Filter by city
+        if ($request->filled('city')) {
+            $query->where('city', $request->city);
         }
 
         // Filter by employment type
@@ -32,8 +33,18 @@ class JobBrowseController extends Controller
         }
 
         $jobs = $query->latest()->paginate(12);
+        
+        // Get unique cities for filter dropdown
+        $cities = JobPosting::where('status', 'active')
+            ->whereNotNull('city')
+            ->select('city', 'province')
+            ->distinct()
+            ->orderBy('province')
+            ->orderBy('city')
+            ->get()
+            ->groupBy('province');
 
-        return view('jobs.index', compact('jobs'));
+        return view('jobs.index', compact('jobs', 'cities'));
     }
 
     public function show($id)

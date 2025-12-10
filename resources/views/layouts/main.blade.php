@@ -66,9 +66,13 @@
                                     <div class="text-sm font-semibold">{{ auth()->user()->name }}</div>
                                     <div class="text-xs text-slate-500">{{ auth()->user()->email }}</div>
                                 </div>
-                                <div class="w-9 h-9 flex items-center justify-center rounded-full bg-indigo-600 text-white font-semibold text-sm">
-                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                                </div>
+                                @if(auth()->user()->profile_photo)
+                                    <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm">
+                                @else
+                                    <div class="w-9 h-9 flex items-center justify-center rounded-full bg-indigo-600 text-white font-semibold text-sm">
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
                                 <svg class="hidden sm:block w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>

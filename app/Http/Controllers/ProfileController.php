@@ -87,6 +87,54 @@ class ProfileController extends Controller
     }
 
     /**
+     * Upload or update the user's profile photo.
+     */
+    public function uploadPhoto(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'profile_photo' => ['required', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'], // 2MB
+        ], [
+            'profile_photo.required' => 'Please select a photo to upload.',
+            'profile_photo.image' => 'File must be an image.',
+            'profile_photo.mimes' => 'Photo must be a JPEG, JPG, PNG, or WEBP file.',
+            'profile_photo.max' => 'Photo size must not exceed 2MB.',
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        // Delete old photo if exists
+        if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
+        // Store new photo
+        $path = $request->file('profile_photo')->store('profile-photos', 'public');
+
+        $user->profile_photo = $path;
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'photo-uploaded');
+    }
+
+    /**
+     * Delete the user's profile photo.
+     */
+    public function deletePhoto(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+            Storage::disk('public')->delete($user->profile_photo);
+            $user->profile_photo = null;
+            $user->save();
+        }
+
+        return Redirect::route('profile.edit')->with('status', 'photo-deleted');
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse

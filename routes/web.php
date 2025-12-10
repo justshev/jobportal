@@ -66,6 +66,10 @@ Route::middleware('auth')->group(function () {
     // CV Upload Routes
     Route::post('/profile/cv', [ProfileController::class, 'uploadCV'])->name('profile.cv.upload');
     Route::delete('/profile/cv', [ProfileController::class, 'deleteCV'])->name('profile.cv.delete');
+    
+    // Profile Photo Routes
+    Route::post('/profile/photo', [ProfileController::class, 'uploadPhoto'])->name('profile.photo.upload');
+    Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])->name('profile.photo.delete');
 });
 
 // CV View Route (accessible by user and admin)

@@ -15,7 +15,18 @@
             </div>
             <div>
                 <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Location</label>
-                <input type="text" name="location" value="{{ request('location') }}" placeholder="Any location" class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select name="city" class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">All Locations</option>
+                    @foreach($cities as $province => $cityGroup)
+                        <optgroup label="{{ $province }}">
+                            @foreach($cityGroup as $cityItem)
+                                <option value="{{ $cityItem->city }}" {{ request('city') == $cityItem->city ? 'selected' : '' }}>
+                                    {{ $cityItem->city }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                    @endforeach
+                </select>
             </div>
             <div>
                 <label class="block text-xs sm:text-sm font-medium text-slate-700 mb-1">Job Type</label>
@@ -28,13 +39,52 @@
                     <option value="remote" {{ request('type') == 'remote' ? 'selected' : '' }}>Remote</option>
                 </select>
             </div>
-            <div class="flex items-end">
-                <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors">
-                    Apply Filters
+            <div class="flex items-end gap-2">
+                <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    Search
                 </button>
+                @if(request()->hasAny(['keyword', 'city', 'type']))
+                    <a href="{{ route('jobs.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-50 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </a>
+                @endif
             </div>
         </div>
+        
+        <!-- Active Filters Display -->
+        @if(request()->hasAny(['keyword', 'city', 'type']))
+        <div class="mt-4 flex flex-wrap gap-2 items-center">
+            <span class="text-xs sm:text-sm text-slate-600 font-medium">Active filters:</span>
+            @if(request('keyword'))
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                    Keyword: "{{ request('keyword') }}"
+                </span>
+            @endif
+            @if(request('city'))
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Location: {{ request('city') }}
+                </span>
+            @endif
+            @if(request('type'))
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Type: {{ ucfirst(str_replace('-', ' ', request('type'))) }}
+                </span>
+            @endif
+        </div>
+        @endif
     </form>
+
+    <!-- Results Count -->
+    <div class="mb-4 flex items-center justify-between">
+        <p class="text-sm text-slate-600">
+            Found <span class="font-semibold text-slate-900">{{ $jobs->total() }}</span> job{{ $jobs->total() != 1 ? 's' : '' }}
+        </p>
+    </div>
 
     <!-- Results -->
     <div class="space-y-3 sm:space-y-4">
@@ -63,12 +113,12 @@
                             <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 {{ ucfirst(str_replace('-', ' ', $job->employment_type)) }}
                             </span>
-                            @if($job->salary_range)
-                                <div class="flex items-center text-xs sm:text-sm text-slate-600">
+                            @if($job->salary_min || $job->salary_max)
+                                <div class="flex items-center text-xs sm:text-sm text-emerald-600 font-medium">
                                     <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    {{ $job->salary_range }}
+                                    {{ formatSalaryRange($job->salary_min, $job->salary_max) }}
                                 </div>
                             @endif
                         </div>
@@ -92,7 +142,7 @@
 
     <!-- Pagination -->
     <div class="mt-6 sm:mt-8">
-        {{ $jobs->links() }}
+        {{ $jobs->appends(request()->query())->links() }}
     </div>
 </div>
 @endsection

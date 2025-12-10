@@ -83,10 +83,25 @@
                 @error('employment_type')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
             </div>
         </div>
-        <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Salary Range</label>
-            <input type="text" name="salary_range" value="{{ old('salary_range') }}" placeholder="e.g., $80,000 - $120,000" class="block w-full rounded-lg border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500">
-            @error('salary_range')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+        
+        <!-- Salary Range Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Gaji Minimum (Rp)</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">Rp</span>
+                    <input type="text" name="salary_min" id="salary_min" value="{{ old('salary_min') }}" placeholder="5.000.000" class="block w-full rounded-lg border border-slate-300 pl-12 pr-3 py-2 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                @error('salary_min')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Gaji Maximum (Rp)</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">Rp</span>
+                    <input type="text" name="salary_max" id="salary_max" value="{{ old('salary_max') }}" placeholder="10.000.000" class="block w-full rounded-lg border border-slate-300 pl-12 pr-3 py-2 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                @error('salary_max')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+            </div>
         </div>
         
         <!-- Job Poster Image Upload -->
@@ -202,5 +217,34 @@
             }
         );
     }
+    
+    // Format Rupiah
+    function formatRupiah(angka) {
+        const numberString = angka.replace(/[^,\d]/g, '').toString();
+        const split = numberString.split(',');
+        const sisa = split[0].length % 3;
+        let rupiah = split[0].substr(0, sisa);
+        const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+        
+        if (ribuan) {
+            const separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        
+        rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+        return rupiah;
+    }
+    
+    // Apply format to salary inputs
+    const salaryMin = document.getElementById('salary_min');
+    const salaryMax = document.getElementById('salary_max');
+    
+    salaryMin.addEventListener('keyup', function(e) {
+        salaryMin.value = formatRupiah(this.value);
+    });
+    
+    salaryMax.addEventListener('keyup', function(e) {
+        salaryMax.value = formatRupiah(this.value);
+    });
 </script>
 @endsection

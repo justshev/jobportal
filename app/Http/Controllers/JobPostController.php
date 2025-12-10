@@ -38,11 +38,20 @@ class JobPostController extends Controller
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'employment_type' => 'required|string|in:full-time,part-time,contract,internship,remote',
-            'salary_range' => 'nullable|string|max:255',
+            'salary_min' => 'nullable|string',
+            'salary_max' => 'nullable|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
         ]);
+
+        // Convert formatted Rupiah to numeric
+        if ($request->salary_min) {
+            $validated['salary_min'] = str_replace('.', '', $request->salary_min);
+        }
+        if ($request->salary_max) {
+            $validated['salary_max'] = str_replace('.', '', $request->salary_max);
+        }
 
         $imagePath = null;
         if ($request->hasFile('image')) {
@@ -87,12 +96,21 @@ class JobPostController extends Controller
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'employment_type' => 'required|string|in:full-time,part-time,contract,internship,remote',
-            'salary_range' => 'nullable|string|max:255',
+            'salary_min' => 'nullable|string',
+            'salary_max' => 'nullable|string',
             'description' => 'required|string',
             'requirements' => 'required|string',
             'status' => 'required|in:active,closed',
             'image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
         ]);
+
+        // Convert formatted Rupiah to numeric
+        if ($request->salary_min) {
+            $validated['salary_min'] = str_replace('.', '', $request->salary_min);
+        }
+        if ($request->salary_max) {
+            $validated['salary_max'] = str_replace('.', '', $request->salary_max);
+        }
 
         if ($request->hasFile('image')) {
             // Delete old image if exists
