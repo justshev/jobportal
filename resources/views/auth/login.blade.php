@@ -93,6 +93,25 @@
                         </div>
                     @endif
 
+                    <!-- Error Messages -->
+                    @if (session('error'))
+                        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+                            <div class="flex items-start">
+                                <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <p class="font-semibold">{{ session('error') }}</p>
+                                    @if(str_contains(session('error'), 'pending'))
+                                        <p class="text-sm mt-1">Your HR account is being reviewed by admin. You will receive an email notification once approved.</p>
+                                    @elseif(str_contains(session('error'), 'rejected'))
+                                        <p class="text-sm mt-1">Please contact admin for more information or register with a new account.</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('login') }}" class="space-y-6">
                         @csrf
 

@@ -31,7 +31,7 @@ if (!function_exists('formatSalaryRange')) {
     function formatSalaryRange($min, $max)
     {
         if (!$min && !$max) {
-            return 'Salary not specified';
+            return 'Negotiable';
         }
         
         if ($min && $max) {
@@ -39,7 +39,7 @@ if (!function_exists('formatSalaryRange')) {
         }
         
         if ($min) {
-            return 'Starting from ' . formatRupiah($min);
+            return 'From ' . formatRupiah($min);
         }
         
         return 'Up to ' . formatRupiah($max);
