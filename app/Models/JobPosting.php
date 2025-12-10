@@ -45,6 +45,6 @@ class JobPosting extends Model
 
     public function reports()
     {
-        return $this->hasMany(Report::class, 'job_id');
+        return $this->hasMany(Report::class, 'job_posting_id');
     }
 }
